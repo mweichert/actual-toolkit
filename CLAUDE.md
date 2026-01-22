@@ -1,20 +1,30 @@
-# Actual Budget Fork Workspace
+# Actual Budget Toolkit
 
-This is a development workspace for the Actual Budget fork, with fork management infrastructure kept **outside** the git repository.
+This is the development workspace for the Actual Budget fork and related tools.
+
+**Repository**: [mweichert/actual-toolkit](https://github.com/mweichert/actual-toolkit)
 
 ## Directory Structure
 
 ```
 ~/Projects/forks/actualbudget/
 ├── CLAUDE.md                 # This file
+├── ARCHITECTURE.md           # Package architecture diagrams
 ├── fork.yaml                 # Fork composition configuration
-├── pyproject.toml            # UV project config
+├── pyproject.toml            # UV project config (Python dependencies)
 ├── scripts/
 │   └── build-fork.py         # Fork build script
 ├── branches/                 # Branch documentation
 │   ├── feature/
 │   └── bugfix/
-└── actual/                   # The git repository (fork of actualbudget/actual)
+├── actual/                   # Git submodule → mweichert/actual (the fork)
+└── actual-mcp/               # MCP server for Actual Budget API
+    ├── package.json
+    ├── src/
+    │   ├── index.ts          # Server entry point
+    │   ├── manifest.ts       # API method manifest (48 methods)
+    │   └── tools/            # MCP tool implementations
+    └── README.md
 ```
 
 ## The Fork
@@ -149,3 +159,52 @@ The build script automatically tags the fork when changes are detected:
 - **actual/** is the actual repository - keep branches clean
 - Never modify `fork` directly - it's rebuilt from component branches
 - See `actual/CLAUDE.md` for repository-specific development guidelines
+
+## MCP Server (`actual-mcp/`)
+
+An MCP server that exposes the Actual Budget API for LLM agents.
+
+### Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_api_methods` | Discover available methods with documentation |
+| `call_api_method` | Call any API method dynamically |
+
+### Quick Start
+
+```bash
+cd ~/Projects/forks/actualbudget/actual-mcp
+npm install
+npm run build
+
+# Run with environment variables
+ACTUAL_SERVER_URL=http://localhost:5006 npm start
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ACTUAL_SERVER_URL` | Yes | URL of your Actual Budget server |
+| `ACTUAL_PASSWORD` | No | Server password |
+| `ACTUAL_DATA_DIR` | No | Local data directory (default: `/data`) |
+| `ACTUAL_BUDGET_ID` | No | Budget ID to auto-load |
+
+### Letta Core Integration
+
+Add to MCP configuration:
+
+```json
+{
+  "mcp_server_type": "stdio",
+  "command": "node",
+  "args": ["/path/to/actual-mcp/dist/index.js"],
+  "env": {
+    "ACTUAL_SERVER_URL": "http://actual-server:5006",
+    "ACTUAL_PASSWORD": "your-password"
+  }
+}
+```
+
+See `actual-mcp/README.md` for full documentation.
