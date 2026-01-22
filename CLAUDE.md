@@ -18,13 +18,7 @@ This is the development workspace for the Actual Budget fork and related tools.
 │   ├── feature/
 │   └── bugfix/
 ├── actual/                   # Git submodule → mweichert/actual (the fork)
-└── actual-mcp/               # MCP server for Actual Budget API
-    ├── package.json
-    ├── src/
-    │   ├── index.ts          # Server entry point
-    │   ├── manifest.ts       # API method manifest (48 methods)
-    │   └── tools/            # MCP tool implementations
-    └── README.md
+└── actual-mcp/               # Git submodule → mweichert/actual-mcp
 ```
 
 ## The Fork
@@ -173,12 +167,15 @@ An MCP server that exposes the Actual Budget API for LLM agents.
 
 ### Quick Start
 
+Run directly from GitHub:
+```bash
+npx github:mweichert/actual-mcp
+```
+
+Or from local clone:
 ```bash
 cd ~/Projects/forks/actualbudget/actual-mcp
-npm install
-npm run build
-
-# Run with environment variables
+npm install && npm run build
 ACTUAL_SERVER_URL=http://localhost:5006 npm start
 ```
 

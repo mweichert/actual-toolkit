@@ -1,3 +1,6 @@
 [submodule "actual"]
 	path = actual
 	url = https://github.com/mweichert/actual.git
+[submodule "actual-mcp"]
+	path = actual-mcp
+	url = https://github.com/mweichert/actual-mcp.git
