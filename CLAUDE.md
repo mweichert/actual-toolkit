@@ -149,10 +149,10 @@ The build script automatically tags the fork when changes are detected:
 
 ## Key Points
 
-- **Fork management files** (this directory) are outside git - they survive branch switches
-- **actual/** is the actual repository - keep branches clean
-- Never modify `fork` directly - it's rebuilt from component branches
-- See `actual/CLAUDE.md` for repository-specific development guidelines
+- **actual/** and **actual-mcp/** are git submodules - work in them directly
+- Never modify `fork` branch directly - it's rebuilt from component branches
+- See `actual/CLAUDE.md` for Actual Budget development guidelines
+- See `actual-mcp/CLAUDE.md` for MCP server development guidelines
 
 ## MCP Server (`actual-mcp/`)
 
