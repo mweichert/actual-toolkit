@@ -1,0 +1,12 @@
+[project]
+name = "actualbudget-fork-tools"
+version = "0.1.0"
+description = "Fork management tools for actual budget"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[tool.uv]
+# This is a scripts-only project, no Python package to build
+package = false

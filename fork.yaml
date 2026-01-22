@@ -1,0 +1,16 @@
+# Fork composition configuration
+# Defines how the 'fork' branch is built from upstream + feature branches
+#
+# Usage: uv run scripts/build-fork.py
+
+upstream:
+  remote: upstream
+  branch: master
+
+base: master  # Local branch that tracks upstream
+
+branches:
+  - name: feature/api-run-rules
+    base: master
+    description: Add API methods to run transaction rules programmatically
+    docs: branches/feature/api-run-rules.md

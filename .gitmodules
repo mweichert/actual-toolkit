@@ -1,0 +1,3 @@
+[submodule "actual"]
+	path = actual
+	url = https://github.com/mweichert/actual.git
