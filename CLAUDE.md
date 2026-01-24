@@ -154,6 +154,33 @@ The build script automatically tags the fork when changes are detected:
 - See `actual/CLAUDE.md` for Actual Budget development guidelines
 - See `actual-mcp/CLAUDE.md` for MCP server development guidelines
 
+## Important Notes
+
+### The `fork` branch is ephemeral
+
+**Never commit directly to the `fork` branch.** It gets completely rebuilt from scratch by `build-fork.py`:
+
+1. The script deletes `fork` and recreates it from `master`
+2. It merges each feature branch listed in `fork.yaml`
+3. Any commits made directly to `fork` will be **permanently lost**
+
+If you need to add something to the fork:
+1. Create a feature branch from `master`
+2. Make your changes there
+3. Add the branch to `fork.yaml`
+4. Run the build script
+
+### Before rebuilding the fork
+
+Before running `build-fork.py`, verify that all changes in the current `fork` branch are accounted for in feature branches:
+
+```bash
+cd ~/Projects/forks/actualbudget/actual
+git log --oneline master..fork
+```
+
+Each commit should trace back to a branch in `fork.yaml`. If you see orphaned commits, they will be lost on rebuild.
+
 ## MCP Server (`actual-mcp/`)
 
 An MCP server that exposes the Actual Budget API for LLM agents.
@@ -205,3 +232,31 @@ Add to MCP configuration:
 ```
 
 See `actual-mcp/README.md` for full documentation.
+
+## Deployment Workflow
+
+### Deploying actual-mcp changes
+
+When making changes to `actual-mcp/`:
+
+1. **Make and commit changes** in actual-mcp submodule
+2. **Tag release**: `git tag v0.x.0 && git push origin main --tags`
+3. **GitHub Action** creates draft release automatically
+4. **Update submodule** in toolkit:
+   ```bash
+   cd ~/Projects/forks/actualbudget
+   git submodule update --remote actual-mcp
+   git add actual-mcp
+   git commit -m "Update actual-mcp submodule (description)"
+   git push
+   ```
+5. **Clear npx cache** (for testing): `rm -rf ~/.npm/_npx/`
+
+### If actual/ fork changes are needed
+
+1. Create/update feature branch in `actual/`
+2. Add to `fork.yaml` if new branch
+3. Run `uv run scripts/build-fork.py`
+4. Wait for GitHub Action to create release with `actual-app-api.tgz`
+5. Update `actual-mcp/package.json` with new tarball URL
+6. Continue with actual-mcp deployment steps above
