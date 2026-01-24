@@ -14,3 +14,13 @@ branches:
     base: master
     description: Add API methods to run transaction rules programmatically
     docs: branches/feature/api-run-rules.md
+
+  - name: feature/disable-upstream-workflows
+    base: master
+    description: Remove upstream-specific GitHub workflows
+    docs: branches/feature/disable-upstream-workflows.md
+
+  - name: feature/publish-api-workflow
+    base: master
+    description: Add GitHub Action to publish API package on fork tags
+    docs: branches/feature/publish-api-workflow.md
