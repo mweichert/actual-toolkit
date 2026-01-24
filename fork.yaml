@@ -29,3 +29,8 @@ branches:
     base: master
     description: Initialize i18next in API package for proper error messages
     docs: branches/feature/api-i18next-init.md
+
+  - name: bugfix/getSyncError-type-mismatch
+    base: master
+    description: Fix getSyncError receiving object instead of string from sync-budget
+    docs: branches/bugfix/getSyncError-type-mismatch.md
