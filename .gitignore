@@ -12,6 +12,7 @@ actual-mcp/dist/
 # Environment
 .env
 .env.local
+.mcp.json
 
 # IDE
 .idea/
