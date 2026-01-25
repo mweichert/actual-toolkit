@@ -235,28 +235,81 @@ See `actual-mcp/README.md` for full documentation.
 
 ## Deployment Workflow
 
-### Deploying actual-mcp changes
+### End-to-End Deployment
 
-When making changes to `actual-mcp/`:
+When asked to "deploy end-to-end", follow this complete workflow:
 
-1. **Make and commit changes** in actual-mcp submodule
-2. **Tag release**: `git tag v0.x.0 && git push origin main --tags`
-3. **GitHub Action** creates draft release automatically
-4. **Update submodule** in toolkit:
-   ```bash
-   cd ~/Projects/forks/actualbudget
-   git submodule update --remote actual-mcp
-   git add actual-mcp
-   git commit -m "Update actual-mcp submodule (description)"
-   git push
-   ```
-5. **Clear npx cache** (for testing): `rm -rf ~/.npm/_npx/`
+#### 1. Deploy actual/ fork changes (if any)
 
-### If actual/ fork changes are needed
+```bash
+cd ~/Projects/forks/actualbudget/actual
 
-1. Create/update feature branch in `actual/`
-2. Add to `fork.yaml` if new branch
-3. Run `uv run scripts/build-fork.py`
-4. Wait for GitHub Action to create release with `actual-app-api.tgz`
-5. Update `actual-mcp/package.json` with new tarball URL
-6. Continue with actual-mcp deployment steps above
+# Create/update feature branch from master
+git checkout -b feature/my-feature master
+# ... make changes, commit ...
+git push -u origin feature/my-feature
+
+# Add to fork.yaml if new branch, then rebuild
+cd ~/Projects/forks/actualbudget
+uv run scripts/build-fork.py
+# This creates a new tag like 0.0.1-fork.N and triggers GitHub Action
+```
+
+Wait for the GitHub Action to complete (creates `actual-app-api.tgz` release artifact).
+
+#### 2. Update actual-mcp to use new fork
+
+```bash
+cd ~/Projects/forks/actualbudget/actual-mcp
+
+# Update package.json with new tarball URL
+# Change: "@actual-app/api": "https://github.com/mweichert/actual/releases/download/0.0.1-fork.N/actual-app-api.tgz"
+
+npm install                    # Update lockfile
+npm run build                  # Verify it builds
+git add package.json package-lock.json
+git commit -m "Update @actual-app/api to 0.0.1-fork.N"
+npm version patch -m "v%s"     # Bump version
+git push origin main --tags    # Push with tags
+```
+
+#### 3. Update toolkit submodules
+
+```bash
+cd ~/Projects/forks/actualbudget
+
+# Ensure actual is on fork branch
+cd actual && git checkout fork && cd ..
+
+# Update submodule references
+git add actual actual-mcp
+git commit -m "Update submodules: actual-mcp vX.Y.Z, actual 0.0.1-fork.N"
+git push
+```
+
+#### 4. Clear caches for testing
+
+```bash
+rm -rf ~/.npm/_npx/
+```
+
+Then reconnect MCP server in Claude Code to use new version.
+
+### Quick: actual-mcp only changes
+
+If only changing actual-mcp (no fork changes needed):
+
+```bash
+cd ~/Projects/forks/actualbudget/actual-mcp
+# ... make changes ...
+git add . && git commit -m "Description"
+npm version patch -m "v%s"
+git push origin main --tags
+
+cd ~/Projects/forks/actualbudget
+git add actual-mcp
+git commit -m "Update actual-mcp submodule (description)"
+git push
+
+rm -rf ~/.npm/_npx/
+```
